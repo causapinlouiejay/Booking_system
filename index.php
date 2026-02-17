@@ -19,15 +19,25 @@
 </html>
 
 <?php
+
 if(isset($_POST['login'])){
-    $username = $_POST['username'];
+    $username = mysqli_real_escape_string($conn, $_POST['username']);
     $password = $_POST['password'];
+    
+    
     $res = mysqli_query($conn, "SELECT * FROM staff WHERE username='$username'");
     $user = mysqli_fetch_assoc($res);
+    
     if($user && password_verify($password, $user['password'])){
+        
         $_SESSION['staff_id'] = $user['staff_id'];
         $_SESSION['username'] = $user['username'];
+        $_SESSION['role'] = $user['role']; 
+        
         header("Location: dashboard.php");
-    } else { echo "<script>alert('Invalid Credentials');</script>"; }
+        exit();
+    } else { 
+        echo "<script>alert('Invalid Credentials');</script>"; 
+    }
 }
 ?>

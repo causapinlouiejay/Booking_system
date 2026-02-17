@@ -1,6 +1,9 @@
 <?php 
 include('db.php'); 
-if(!isset($_SESSION['staff_id'])) header("Location: index.php");
+if(!isset($_SESSION['staff_id'])) {
+    header("Location: index.php");
+    exit();
+}
 
 $success = isset($_GET['success']) ? true : false;
 ?>
@@ -27,9 +30,13 @@ $success = isset($_GET['success']) ? true : false;
             <button onclick="toggleModal()" class="w-full flex items-center p-3 rounded-xl hover:bg-slate-800 text-slate-300 transition">
                 <span class="mr-3">🛎️</span> New Booking
             </button>
+            
+            <?php if($_SESSION['role'] == 'Admin'): ?>
             <a href="manage_rooms.php" class="flex items-center p-3 rounded-xl hover:bg-slate-800 text-slate-300 transition">
                 <span class="mr-3">🏨</span> Manage Rooms
             </a>
+            <?php endif; ?>
+            
             <a href="#" class="flex items-center p-3 rounded-xl hover:bg-slate-800 text-slate-300 transition">
                 <span class="mr-3">🧹</span> Housekeeping
             </a>
@@ -37,7 +44,7 @@ $success = isset($_GET['success']) ? true : false;
 
         <div class="absolute bottom-10 left-6 right-6">
             <div class="bg-slate-800/50 p-4 rounded-2xl mb-4 border border-slate-700">
-                <p class="text-[10px] text-slate-500 uppercase font-bold">Receptionist</p>
+                <p class="text-[10px] text-slate-500 uppercase font-bold"><?php echo $_SESSION['role']; ?></p>
                 <p class="text-sm font-bold text-blue-200"><?php echo $_SESSION['username']; ?></p>
             </div>
             <a href="logout.php" class="block text-center p-3 rounded-xl bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white transition font-bold text-sm">Sign Out</a>
@@ -45,7 +52,6 @@ $success = isset($_GET['success']) ? true : false;
     </div>
 
     <div class="ml-64 p-10 w-full">
-        
         <div class="flex justify-between items-center mb-10">
             <div>
                 <h2 class="text-3xl font-black text-slate-800 tracking-tight">System Overview</h2>
@@ -190,7 +196,6 @@ $success = isset($_GET['success']) ? true : false;
                         <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Assign Room</label>
                         <select name="room_id" required class="w-full mt-2 p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl outline-none font-bold">
                             <?php 
-                            // Only show rooms that are CLEAN and not currently occupied by a "Checked-In" guest
                             $rooms = mysqli_query($conn, "SELECT * FROM rooms WHERE housekeeping_status='Clean'");
                             while($r = mysqli_fetch_assoc($rooms)) {
                                 $rid = $r['room_id'];
@@ -212,28 +217,50 @@ $success = isset($_GET['success']) ? true : false;
                     </div>
                     <div>
                         <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Check-In Date</label>
-                        <input type="date" name="check_in" value="<?php echo date('Y-m-d'); ?>" required class="w-full mt-2 p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl outline-none font-bold">
+                        <input type="date" name="check_in" id="check_in" value="<?php echo date('Y-m-d'); ?>" required 
+                               onchange="updateMinCheckout()"
+                               class="w-full mt-2 p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl outline-none font-bold">
                     </div>
                     <div>
                         <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Check-Out Date</label>
-                        <input type="date" name="check_out" required class="w-full mt-2 p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl outline-none font-bold">
+                        <input type="date" name="check_out" id="check_out" required 
+                               class="w-full mt-2 p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl outline-none font-bold">
                     </div>
-                </div>
 
-                <div class="pt-4">
-                    <button type="submit" name="submit_booking" class="w-full bg-slate-900 text-white font-black py-5 rounded-[1.5rem] hover:bg-blue-600 transition-all shadow-2xl uppercase tracking-widest">
-                        Complete Reservation
-                    </button>
+                    <div class="pt-4 md:col-span-2">
+                        <button type="submit" name="submit_booking" class="w-full bg-slate-900 text-white font-black py-5 rounded-[1.5rem] hover:bg-blue-600 transition-all shadow-2xl uppercase tracking-widest">
+                            Complete Reservation
+                        </button>
+                    </div>
                 </div>
             </form>
         </div>
     </div>
 
     <script>
-        function toggleModal() {
-            const modal = document.getElementById('bookingModal');
-            modal.classList.toggle('hidden');
+    function toggleModal() {
+        const modal = document.getElementById('bookingModal');
+        modal.classList.toggle('hidden');
+    }
+
+    function updateMinCheckout() {
+        const checkInVal = document.getElementById('check_in').value;
+        const checkOutInput = document.getElementById('check_out');
+        
+        if (checkInVal) {
+            let nextDay = new Date(checkInVal);
+            nextDay.setDate(nextDay.getDate() + 1);
+            
+            const minDate = nextDay.toISOString().split("T")[0];
+            checkOutInput.min = minDate;
+            
+            if(!checkOutInput.value || checkOutInput.value <= checkInVal) {
+                checkOutInput.value = minDate;
+            }
         }
+    }
+
+    window.onload = updateMinCheckout;
     </script>
 </body>
 </html>

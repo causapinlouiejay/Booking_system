@@ -1,7 +1,17 @@
 <?php 
 include('db.php'); 
-if(!isset($_SESSION['staff_id'])) header("Location: index.php");
 
+if(!isset($_SESSION['staff_id'])) {
+    header("Location: index.php");
+    exit();
+}
+
+
+if($_SESSION['role'] !== 'Admin') {
+    
+    header("Location: dashboard.php?error=unauthorized");
+    exit();
+}
 
 if(isset($_POST['add_room'])){
     $num = mysqli_real_escape_string($conn, $_POST['room_num']);
