@@ -7,7 +7,7 @@
 </head>
 <body class="bg-slate-900 flex items-center justify-center h-screen">
     <div class="bg-white/10 backdrop-blur-md p-8 rounded-2xl shadow-2xl w-96 border border-white/20">
-        <h2 class="text-white text-3xl font-bold mb-6 text-center">Staff Login</h2>
+        <h2 class="text-white text-3xl font-bold mb-6 text-center">Login</h2>
         <form action="" method="POST" class="space-y-4">
             <input type="text" name="username" placeholder="Username" class="w-full p-3 rounded bg-white/5 border border-white/20 text-white placeholder-gray-400 outline-none focus:border-blue-500" required>
             <input type="password" name="password" placeholder="Password" class="w-full p-3 rounded bg-white/5 border border-white/20 text-white placeholder-gray-400 outline-none focus:border-blue-500" required>

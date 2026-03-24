@@ -6,6 +6,23 @@ if(!isset($_SESSION['staff_id'])) {
 }
 
 $success = isset($_GET['success']) ? true : false;
+
+$total_rooms_res = mysqli_query($conn, "SELECT COUNT(*) as count FROM rooms");
+$total_rooms = mysqli_fetch_assoc($total_rooms_res)['count'];
+
+$occupied_res = mysqli_query($conn, "SELECT COUNT(*) as count FROM bookings WHERE booking_status = 'Checked-In'");
+$occupied_rooms = mysqli_fetch_assoc($occupied_res)['count'];
+
+$occupancy_rate = ($total_rooms > 0) ? round(($occupied_rooms / $total_rooms) * 100) : 0;
+
+
+$today = date('Y-m-d');
+$arrivals_res = mysqli_query($conn, "SELECT COUNT(*) as count FROM bookings WHERE check_in = '$today' AND booking_status = 'Reserved'");
+$arrivals = mysqli_fetch_assoc($arrivals_res)['count'];
+
+
+$dirty_res = mysqli_query($conn, "SELECT COUNT(*) as count FROM rooms WHERE housekeeping_status = 'Dirty'");
+$dirty = mysqli_fetch_assoc($dirty_res)['count'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -37,7 +54,7 @@ $success = isset($_GET['success']) ? true : false;
             </a>
             <?php endif; ?>
             
-            <a href="#" class="flex items-center p-3 rounded-xl hover:bg-slate-800 text-slate-300 transition">
+            <a href="housekeeping.php" class="flex items-center p-3 rounded-xl hover:bg-slate-800 text-slate-300 transition">
                 <span class="mr-3">🧹</span> Housekeeping
             </a>
         </nav>
@@ -58,9 +75,8 @@ $success = isset($_GET['success']) ? true : false;
                 <p class="text-slate-500 font-medium">Manage arrivals, departures, and inventory.</p>
             </div>
             <div class="flex gap-4">
-                <button onclick="toggleModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-2xl font-black shadow-xl transition-all hover:-translate-y-1">
-                    + NEW RESERVATION
-                </button>
+                
+            
             </div>
         </div>
 
@@ -109,6 +125,7 @@ $success = isset($_GET['success']) ? true : false;
                     <span class="text-xs font-black text-slate-400 uppercase tracking-widest">Live System Feed</span>
                 </div>
             </div>
+            
             <table class="w-full text-left">
                 <thead class="bg-slate-50 text-slate-400 text-[10px] uppercase tracking-[0.2em] font-black">
                     <tr>

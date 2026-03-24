@@ -6,7 +6,7 @@
     <div class="bg-white/10 backdrop-blur-md p-8 rounded-2xl shadow-2xl w-96 border border-white/20">
         <h2 class="text-white text-3xl font-bold mb-6 text-center">Staff Registration</h2>
         <form action="" method="POST" class="space-y-4">
-            /* Replace the form in register.php with this */
+            
 <form action="" method="POST" class="space-y-4">
     <input type="text" name="username" placeholder="Choose Username" class="w-full p-3 rounded bg-white/5 border border-white/20 text-white outline-none" required>
     <input type="password" name="password" placeholder="Choose Password" class="w-full p-3 rounded bg-white/5 border border-white/20 text-white outline-none" required>
