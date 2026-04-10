@@ -127,57 +127,66 @@ $dirty = mysqli_fetch_assoc($dirty_res)['count'];
             </div>
             
             <table class="w-full text-left">
-                <thead class="bg-slate-50 text-slate-400 text-[10px] uppercase tracking-[0.2em] font-black">
-                    <tr>
-                        <th class="p-6">Guest Identity</th>
-                        <th class="p-6">Room Assigned</th>
-                        <th class="p-6">Stay Dates</th>
-                        <th class="p-6">Source</th>
-                        <th class="p-6">Status</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100">
-                    <?php
-                    $query = "SELECT b.*, g.full_name, g.loyalty_status, r.room_number, r.room_type 
-                              FROM bookings b 
-                              JOIN guests g ON b.guest_id = g.guest_id 
-                              JOIN rooms r ON b.room_id = r.room_id
-                              ORDER BY b.booking_id DESC LIMIT 8";
-                    $result = mysqli_query($conn, $query);
-                    while($row = mysqli_fetch_assoc($result)):
-                    ?>
-                    <tr class="hover:bg-blue-50/30 transition-colors">
-                        <td class="p-6">
-                            <div class="font-bold text-slate-900 text-lg"><?php echo $row['full_name']; ?></div>
-                            <div class="flex items-center gap-1">
-                                <span class="text-[10px] font-black px-2 py-0.5 rounded bg-blue-100 text-blue-600 uppercase">
-                                    <?php echo $row['loyalty_status']; ?>
-                                </span>
-                            </div>
-                        </td>
-                        <td class="p-6 text-slate-700">
-                            <div class="font-black">#<?php echo $row['room_number']; ?></div>
-                            <div class="text-xs font-medium text-slate-400"><?php echo $row['room_type']; ?></div>
-                        </td>
-                        <td class="p-6">
-                            <div class="text-sm font-bold text-slate-600"><?php echo date('D, M d', strtotime($row['check_in'])); ?></div>
-                            <div class="text-[10px] font-bold text-slate-400 uppercase">to <?php echo date('D, M d', strtotime($row['check_out'])); ?></div>
-                        </td>
-                        <td class="p-6">
-                            <span class="text-[10px] font-black text-slate-500 border border-slate-200 px-3 py-1.5 rounded-lg">
-                                <?php echo $row['booking_source']; ?>
-                            </span>
-                        </td>
-                        <td class="p-6">
-                            <span class="px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-sm
-                                <?php echo $row['booking_status'] == 'Checked-In' ? 'bg-emerald-500 text-white' : 'bg-blue-500 text-white'; ?>">
-                                <?php echo $row['booking_status']; ?>
-                            </span>
-                        </td>
-                    </tr>
-                    <?php endwhile; ?>
-                </tbody>
-            </table>
+    <thead class="bg-slate-50 text-slate-400 text-[10px] uppercase tracking-[0.2em] font-black">
+        <tr>
+            <th class="p-6">Guest Identity</th>
+            <th class="p-6">Room Assigned</th>
+            <th class="p-6">Stay Dates</th>
+            <th class="p-6">Source</th>
+            <th class="p-6">Status</th>
+            <th class="p-6">Actions</th> 
+        </tr>
+    </thead>
+    <tbody class="divide-y divide-slate-100">
+        <?php
+        $query = "SELECT b.*, g.full_name, g.loyalty_status, r.room_number, r.room_type 
+                  FROM bookings b 
+                  JOIN guests g ON b.guest_id = g.guest_id 
+                  JOIN rooms r ON b.room_id = r.room_id
+                  ORDER BY b.booking_id DESC LIMIT 8";
+        $result = mysqli_query($conn, $query);
+        while($row = mysqli_fetch_assoc($result)):
+        ?>
+        <tr class="hover:bg-blue-50/30 transition-colors">
+            <td class="p-6">
+                <div class="font-bold text-slate-900 text-lg"><?php echo $row['full_name']; ?></div>
+                <div class="flex items-center gap-1">
+                    <span class="text-[10px] font-black px-2 py-0.5 rounded bg-blue-100 text-blue-600 uppercase">
+                        <?php echo $row['loyalty_status']; ?>
+                    </span>
+                </div>
+            </td>
+            <td class="p-6 text-slate-700">
+                <div class="font-black">#<?php echo $row['room_number']; ?></div>
+                <div class="text-xs font-medium text-slate-400"><?php echo $row['room_type']; ?></div>
+            </td>
+            <td class="p-6">
+                <div class="text-sm font-bold text-slate-600"><?php echo date('D, M d', strtotime($row['check_in'])); ?></div>
+                <div class="text-[10px] font-bold text-slate-400 uppercase">to <?php echo date('D, M d', strtotime($row['check_out'])); ?></div>
+            </td>
+            <td class="p-6">
+                <span class="text-[10px] font-black text-slate-500 border border-slate-200 px-3 py-1.5 rounded-lg">
+                    <?php echo $row['booking_source']; ?>
+                </span>
+            </td>
+            <td class="p-6">
+                <span class="px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-sm
+                    <?php echo $row['booking_status'] == 'Checked-In' ? 'bg-emerald-500 text-white' : 'bg-blue-500 text-white'; ?>">
+                    <?php echo $row['booking_status']; ?>
+                </span>
+            </td>
+            <td class="p-6">
+                <?php if($row['booking_status'] == 'Checked-In'): ?>
+                    <a href="checkout.php?booking_id=<?php echo $row['booking_id']; ?>" 
+                       class="bg-slate-900 text-white text-[10px] font-black px-4 py-2 rounded-lg hover:bg-blue-600 transition uppercase tracking-tighter">
+                       Process Checkout
+                    </a>
+                <?php endif; ?>
+            </td>
+        </tr>
+        <?php endwhile; ?>
+    </tbody>
+    </table>
         </div>
     </div>
 
