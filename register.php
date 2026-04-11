@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
-    <title>GrandHotel | Staff Registration</title>
+    <title>GrandHotel | Create Account</title>
     <style>
         body { font-family: 'Poppins', sans-serif; }
         .serif { font-family: 'Playfair Display', serif; }
@@ -24,7 +24,7 @@
     <div class="relative z-10 w-full max-w-md px-6">
         <div class="text-center mb-8">
             <h1 class="serif text-4xl text-transparent bg-clip-text gold-gradient font-bold tracking-widest uppercase">GrandHotel</h1>
-            <p class="text-gray-400 tracking-[0.3em] text-[10px] mt-2 uppercase">Create Staff Credentials</p>
+            <p class="text-gray-400 tracking-[0.3em] text-[10px] mt-2 uppercase">Create an Account</p>
         </div>
 
         <div class="bg-black/40 backdrop-blur-xl p-10 rounded-3xl shadow-2xl border border-white/10">
@@ -36,38 +36,41 @@
                 </div>
 
                 <div class="space-y-1">
-                    <label class="text-[10px] text-gray-400 uppercase tracking-widest ml-1">Access Password</label>
+                    <label class="text-[10px] text-gray-400 uppercase tracking-widest ml-1">Password</label>
                     <input type="password" name="password" placeholder="••••••••" 
                            class="w-full p-4 rounded-xl bg-white/5 border border-white/10 text-white outline-none focus:border-[#c5a059] transition-all" required>
                 </div>
 
-                <div class="space-y-1">
-                    <label class="text-[10px] text-gray-400 uppercase tracking-widest ml-1">Department/Role</label>
-                    <select name="role" class="w-full p-4 rounded-xl bg-gray-900 border border-white/10 text-white outline-none focus:border-[#c5a059] appearance-none">
-                        <option value="Staff">Staff (Reception & Bookings)</option>
-                        <option value="Admin">Administrator (Full Access)</option>
-                    </select>
-                </div>
-
                 <button type="submit" name="register" 
                         class="gold-gradient w-full py-4 rounded-xl text-gray-900 font-bold uppercase tracking-widest text-sm hover:scale-[1.02] transition-transform shadow-lg shadow-yellow-900/20 mt-4">
-                    Register Staff
+                    Create Account
                 </button>
             </form>
 
             <p class="text-gray-500 text-sm mt-6 text-center">
-                Already registered? <a href="index.php" class="text-[#ecd4a4] hover:underline">Back to Login</a>
+                Already registered? <a href="index.php" class="text-[#ecd4a4] hover:underline">Sign In</a>
             </p>
         </div>
-    </div>
-
     <?php
     if(isset($_POST['register'])){
         $user = mysqli_real_escape_string($conn, $_POST['username']);
         $pass = password_hash($_POST['password'], PASSWORD_DEFAULT);
-        $role = $_POST['role'];
-        mysqli_query($conn, "INSERT INTO staff (username, password, role) VALUES ('$user', '$pass', '$role')");
-        header("Location: index.php");
+        
+        // 1. Check if username already exists
+        $check = mysqli_query($conn, "SELECT * FROM staff WHERE username='$user'");
+        if(mysqli_num_rows($check) > 0) {
+            echo "<script>alert('Username already taken. Please choose another.');</script>";
+        } else {
+            // 2. Hardcode the default role to 'User'
+            $role = 'User'; 
+            
+            $query = "INSERT INTO staff (username, password, role) VALUES ('$user', '$pass', '$role')";
+            if(mysqli_query($conn, $query)) {
+                echo "<script>alert('Account created successfully!'); window.location='index.php';</script>";
+            } else {
+                echo "<script>alert('Registration failed. Please try again.');</script>";
+            }
+        }
     }
     ?>
 </body>

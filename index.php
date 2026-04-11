@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
-    <title>GrandHotel | Staff Portal</title>
+    <title>GrandHotel | Portal</title>
     <style>
         body { font-family: 'Poppins', sans-serif; }
         .serif { font-family: 'Playfair Display', serif; }
@@ -33,7 +33,7 @@
         </div>
 
         <div class="bg-black/40 backdrop-blur-xl p-10 rounded-3xl shadow-2xl border border-white/10 ring-1 ring-white/5">
-            <h2 class="text-white text-2xl font-light mb-8 text-center tracking-tight">Staff Sign In</h2>
+            <h2 class="text-white text-2xl font-light mb-8 text-center tracking-tight"> Sign In</h2>
             
             <form action="" method="POST" class="space-y-6">
                 <div class="space-y-1">
@@ -58,7 +58,7 @@
 
             <div class="mt-8 pt-6 border-t border-white/5 text-center">
                 <p class="text-gray-400 text-sm">
-                    New staff? <a href="register.php" class="text-[#ecd4a4] hover:underline font-medium">Request Access</a>
+                  New account  <a href="register.php" class="text-[#ecd4a4] hover:underline font-medium">Register</a>
                 </p>
             </div>
         </div>
@@ -75,16 +75,22 @@ if(isset($_POST['login'])){
     $username = mysqli_real_escape_string($conn, $_POST['username']);
     $password = $_POST['password'];
     
+    // Note: This relies on the 'staff' table acting as a universal users table.
     $res = mysqli_query($conn, "SELECT * FROM staff WHERE username='$username'");
     $user = mysqli_fetch_assoc($res);
     
     if($user && password_verify($password, $user['password'])){
-        session_start(); // Ensure session is started
-        $_SESSION['staff_id'] = $user['staff_id'];
+        $_SESSION['staff_id'] = $user['staff_id']; // This acts as user_id
         $_SESSION['username'] = $user['username'];
         $_SESSION['role'] = $user['role']; 
         
-        header("Location: dashboard.php");
+        // Routing logic based on role
+        if($_SESSION['role'] == 'Admin' || $_SESSION['role'] == 'Staff') {
+            header("Location: dashboard.php");
+        } else {
+            // Role is 'User'
+            header("Location: book_online.php");
+        }
         exit();
     } else { 
         echo "<script>alert('Invalid Credentials');</script>"; 
